@@ -6,8 +6,9 @@
       <class name="com.web.selenium.PrivacySettings">
         <methods>
           <include name="init"/>
-          <include name="clickRadioButtons"/>
           <include name="shutDown"/>
+          <include name="clickOptOut"/>
+          <include name="clickOptIn"/>
         </methods>
       </class> <!-- com.web.selenium.PrivacySettings -->
     </classes>

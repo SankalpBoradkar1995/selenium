@@ -12,26 +12,22 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
-public class PrivacySettings {
+public class test {
+	  private static String url = "https://www.verizon.com/";
+	    private static WebDriver driver;
+	    private static WebDriverWait wait;
+	    private static String elemntOnLoading = "gnav20-Shop-L1";
+	    private static String privacyLink = "//*[contains(text(), 'Your Privacy Choices')][1]";
+	    private static String onLoadingPrivacyPage = "gnav20-Shop-L1";
+	    private static String optOutId = "optOut";
+	    private static String optInId = "doNotOptOut";
+	    private static String privacyDialogBox = ".ModalDialog-sc-1m9nirl-0[role='dialog']";
+	    private static String privacyDialogBoxYes = "button[aria-label='Yes']";
 
-    private String url = "https://www.verizon.com/";
-    private WebDriver driver;
-    private WebDriverWait wait;
-    private String elemntOnLoading = "gnav20-Shop-L1";
-    private String privacyLink = "//*[contains(text(), 'Your Privacy Choices')][1]";
-    private String onLoadingPrivacyPage = "gnav20-Shop-L1";
-    private String optOutId = "optOut";
-    private String optInId = "doNotOptOut";
-    private String privacyDialogBox = ".ModalDialog-sc-1m9nirl-0[role='dialog']";
-    private String privacyDialogBoxYes = "button[aria-label='Yes']";
-
-    @BeforeTest
-    public void init() {
-        System.setProperty("webdriver.chrome.driver",
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.setProperty("webdriver.chrome.driver",
                 System.getProperty("user.dir") + "\\src\\main\\resources\\chromedriver.exe");
         
         ChromeOptions options = new ChromeOptions();
@@ -45,10 +41,6 @@ public class PrivacySettings {
         driver.manage().deleteAllCookies();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    }
-
-    @Test
-    public void clickOptIn() throws InterruptedException {
         driver.get(url);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elemntOnLoading)));
 
@@ -66,10 +58,7 @@ public class PrivacySettings {
         for (LogEntry entry : logs) {
             System.out.println(entry.getMessage());
         }
-    }
-
-    @Test
-    public void clickOptOut() {
+        
         driver.get(url);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elemntOnLoading)));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
@@ -77,10 +66,17 @@ public class PrivacySettings {
         driver.findElement(By.xpath(privacyLink)).click();
         WebElement optOut = driver.findElement(By.id(optOutId));
         optOut.click();
-    }
+        
+        if(driver!=null)
+        {
+        	driver.quit();
+        }
+		
 
-    private void handleDialog() {
-    	 try {
+	}
+
+	private static void handleDialog() {
+		 try {
              WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
              WebElement dialogBox = wait.until(
                      ExpectedConditions.visibilityOfElementLocated(By.cssSelector(privacyDialogBox)));
@@ -92,14 +88,7 @@ public class PrivacySettings {
          } catch (Exception e) {
              e.printStackTrace();
          }
-    }
-    
-    
+		
+	}
 
-    @AfterTest
-    public void shutDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 }
