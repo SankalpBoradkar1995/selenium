@@ -113,7 +113,7 @@ public class test {
 		// Print the result
 		System.out.println("Consent Result: " + result);
 		
-		// After the flow terminating the driver instance 
+		// After the flow terminating the driver instance if its available
 
 		if (driver != null) {
 			driver.quit();
