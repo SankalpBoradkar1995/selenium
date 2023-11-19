@@ -2,24 +2,24 @@
 <testng-results ignored="0" total="2" passed="2" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2023-11-18T20:22:00 IST" name="Default suite" finished-at="2023-11-18T20:22:28 IST" duration-ms="27904">
+  <suite started-at="2023-11-18T23:54:05 IST" name="Default suite" finished-at="2023-11-18T23:54:22 IST" duration-ms="16417">
     <groups>
     </groups>
-    <test started-at="2023-11-18T20:22:00 IST" name="Default test" finished-at="2023-11-18T20:22:28 IST" duration-ms="27904">
+    <test started-at="2023-11-18T23:54:05 IST" name="Default test" finished-at="2023-11-18T23:54:22 IST" duration-ms="16417">
       <class name="com.web.selenium.PrivacySettings">
-        <test-method is-config="true" signature="init()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T20:22:01 IST" name="init" finished-at="2023-11-18T20:22:02 IST" duration-ms="1423" status="PASS">
+        <test-method is-config="true" signature="init()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T23:54:05 IST" name="init" finished-at="2023-11-18T23:54:07 IST" duration-ms="1457" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- init -->
-        <test-method signature="clickOptIn()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T20:22:02 IST" name="clickOptIn" finished-at="2023-11-18T20:22:26 IST" duration-ms="24520" status="PASS">
+        <test-method signature="clickOptIn()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T23:54:07 IST" name="clickOptIn" finished-at="2023-11-18T23:54:20 IST" duration-ms="13326" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- clickOptIn -->
-        <test-method signature="clickOptOut()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T20:22:26 IST" name="clickOptOut" finished-at="2023-11-18T20:22:28 IST" duration-ms="1763" status="PASS">
+        <test-method signature="clickOptOut()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T23:54:20 IST" name="clickOptOut" finished-at="2023-11-18T23:54:22 IST" duration-ms="1467" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- clickOptOut -->
-        <test-method is-config="true" signature="shutDown()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T20:22:28 IST" name="shutDown" finished-at="2023-11-18T20:22:28 IST" duration-ms="162" status="PASS">
+        <test-method is-config="true" signature="shutDown()[pri:0, instance:com.web.selenium.PrivacySettings@5d0bf09b]" started-at="2023-11-18T23:54:22 IST" name="shutDown" finished-at="2023-11-18T23:54:22 IST" duration-ms="132" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- shutDown -->
