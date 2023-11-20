@@ -76,7 +76,7 @@ public class PrivacySettings {
 		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 	}
 
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void clickOptIn() throws InterruptedException {
 		driver.get(url);
 		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elemntOnLoading)));
@@ -129,14 +129,14 @@ public class PrivacySettings {
 		
 	}
 
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void clickOptOut() throws InterruptedException {
 		driver.get(url);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elemntOnLoading)));
 		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
 				driver.findElement(By.id(optOutId)));
-		wait.until(ExpectedConditions.elementToBeClickable(By.xpath(optOutId)));
-		driver.findElement(By.xpath(privacyLink)).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id(optOutId)));
+		//driver.findElement(By.xpath(privacyLink)).click();
 		WebElement optOut = driver.findElement(By.id(optOutId));
 		optOut.click();
 		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;

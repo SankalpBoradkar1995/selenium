@@ -7,7 +7,7 @@
         <methods>
           <include name="init"/>
           <include name="shutDown"/>
-          <include name="clickOptIn"/>
+          <include name="clickOptOut"/>
         </methods>
       </class> <!-- com.web.selenium.PrivacySettings -->
     </classes>
