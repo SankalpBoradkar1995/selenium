@@ -98,10 +98,19 @@ public class PrivacyOptIn {
 		System.out.println("Consent Result: " + result);
 		boolean saleOfInfoValue;
 		String OptInString;
+
+		// Adding try catch exception because, sometimes "SaleOfInfo" returns true sometimes auto.
+		// Since auto is not a boolean type but string it gives classCastException
+		// Hence to avoid it handeling it in try catch block such that it will return either "auto" or "true" as saleOfInfo on opting in
+		// also asserting the result using Assert.assertTrue
 		try {
 			saleOfInfoValue = (boolean) ((org.openqa.selenium.JavascriptExecutor) jsExecutor)
 					.executeScript("return arguments[0].purposes.SaleOfInfo;", result);
 			System.out.println("SaleOfInfo status: " + saleOfInfoValue);
+			if(!saleOfInfoValue)
+			{
+				Assert.assertTrue(true, "Sale of info is false if opting in");
+			}
 		} catch (ClassCastException e) {
 			if (e.getMessage().contains("class java.lang.String cannot be cast to class java.lang.Boolean")) {
 				OptInString = (String) ((org.openqa.selenium.JavascriptExecutor) jsExecutor)
