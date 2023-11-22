@@ -45,7 +45,13 @@ public class PrivacyOptOut {
 	// Chat close button
 	private static String closeChat = "//*[@data-lp-event='close']";
 
-	public static void main(String[] args) throws InterruptedException {
+	// Accessories id
+	private static String accessoriesId = "gnav20-Shop-L2-4";
+
+	// Gaming accessories
+	private static String gamingAccessories = "gnav20-Shop-L3-52";
+
+	public static void main(String[] args) throws Exception {
 		System.setProperty("webdriver.chrome.driver",
 				System.getProperty("user.dir") + "\\src\\main\\resources\\chromedriver.exe");
 
@@ -61,11 +67,12 @@ public class PrivacyOptOut {
 
 		driver.get(url);
 		WebElement optOut = driver.findElement(By.id(optOutId));
-//		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
-//				driver.findElement(By.id(optOutId)));
+
 		wait.until(ExpectedConditions.visibilityOf(optOut));
 		wait.until(ExpectedConditions.elementToBeClickable(optOut));
 		optOut.click();
+
+		// ----------------------Checking sale of info for mobile devices page
 
 		// Clicking Shop button
 		driver.findElement(By.id(shopButtonId)).click();
@@ -86,43 +93,93 @@ public class PrivacyOptOut {
 
 		// *[@id="128"]/div/label
 		// Scrolling down to selet storage
-		Thread.sleep(3000);
+		// Thread.sleep(3000);
 		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
 		// Execute the airgap.getConsent() command and store the result
 		Object result = jsExecutor.executeScript("return airgap.getConsent();");
 		System.out.println("Consent Result: " + result);
-		boolean saleOfInfoValue;
-		String OptInString;
 
-		// Adding try catch exception because, sometimes "SaleOfInfo" returns true
-		// sometimes auto.
-		// Since auto is not a boolean type but string it gives classCastException
-		// Hence to avoid it handeling it in try catch block such that it will return
-		// either "auto" or "true" as saleOfInfo on opting in
-		// also asserting the result using Assert.assertTrue
-		try {
-			saleOfInfoValue = (boolean) ((org.openqa.selenium.JavascriptExecutor) jsExecutor)
-					.executeScript("return arguments[0].purposes.SaleOfInfo;", result);
-			System.out.println("SaleOfInfo status: " + saleOfInfoValue);
-			if (!saleOfInfoValue) {
-				Assert.assertTrue(true, "Sale of info is true if opting out");
-			}
-		} catch (ClassCastException e) {
-			if (e.getMessage().contains("class java.lang.String cannot be cast to class java.lang.Boolean")) {
-				OptInString = (String) ((org.openqa.selenium.JavascriptExecutor) jsExecutor)
-						.executeScript("return arguments[0].purposes.SaleOfInfo;", result);
-				System.out.println("SaleOfInfo status: " + OptInString);
-				if (!(OptInString.equalsIgnoreCase("Auto") || OptInString.equalsIgnoreCase("false"))) {
-					Assert.assertTrue(true, "Sale of info is true if opting out");
-				}
-			}
+		// Converting output received by executing airgap.getConsent(); in console to
+		// string
+
+		String consoleResult = result.toString();
+		System.out.println("Consent Result: " + result);
+
+		// Checking if string contains "SaleOfInfo=false" since this flow is for opt out
+		// If SaleOfInfo=true even if we have opted out then throwing exception to fail
+		// the test
+
+		boolean SaleOfInfo = saleOfInfo(consoleResult);
+
+		if (SaleOfInfo == true) {
+			throw new Exception("SaleOfInfo is true even when we have opted out");
+		} else {
+			System.out.println("SaleofInfo=" + SaleOfInfo+" , for Devices page when we've opted out");
+		}
+
+		// ------------------------ Checking flow for Accessories page
+		((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
+		WebElement shopButton = driver.findElement(By.id(shopButtonId));
+
+		// Scrolling back to shop page
+//		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
+//				driver.findElement(By.id(shopButtonId)));
+		// Clicking on shop page
+		wait.until(ExpectedConditions.visibilityOf(shopButton));
+		wait.until(ExpectedConditions.elementToBeClickable(shopButton));
+		shopButton.click();
+
+		// Clicking on accessories option
+		wait.until(ExpectedConditions.elementToBeClickable(By.id(accessoriesId)));
+		driver.findElement(By.id(accessoriesId)).click();
+
+		// Clicking on Gaming option
+		wait.until(ExpectedConditions.elementToBeClickable(By.id(gamingAccessories)));
+		driver.findElement(By.id(gamingAccessories)).click();
+
+		// Selecting an element with css selectore, its href is:
+		// href="/products/playstation/"
+		wait.until(ExpectedConditions.visibilityOfElementLocated(
+				By.cssSelector(".categoryTilelets:nth-child(1) .tilelet-wrapper:nth-child(2) img")));
+		wait.until(ExpectedConditions.elementToBeClickable(
+				By.cssSelector(".categoryTilelets:nth-child(1) .tilelet-wrapper:nth-child(2) img")));
+		driver.findElement(By.cssSelector(".categoryTilelets:nth-child(1) .tilelet-wrapper:nth-child(2) img")).click();
+
+		// Clicking on the console
+		wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.cssSelector("#\\31 000039815-Save\\ \\$60 #gridwallProductName > h2")));
+		wait.until(ExpectedConditions
+				.elementToBeClickable(By.cssSelector("#\\31 000039815-Save\\ \\$60 #gridwallProductName > h2")));
+		driver.findElement(By.cssSelector("#\\31 000039815-Save\\ \\$60 #gridwallProductName > h2")).click();
+
+		// Clicking on the continue button
+		wait.until(
+				ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".glVjuF > .HitArea-VDS__sc-bc3yhn-0")));
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".glVjuF > .HitArea-VDS__sc-bc3yhn-0")));
+		driver.findElement(By.cssSelector(".glVjuF > .HitArea-VDS__sc-bc3yhn-0")).click();
+
+		result = jsExecutor.executeScript("return airgap.getConsent();");
+		boolean resultForAccessoreisPage = saleOfInfo(result.toString());
+
+		if (resultForAccessoreisPage == true) {
+			throw new Exception("SaleOfInfo is false even when we have opted in");
+		} else {
+			System.out.println("SaleofInfo=" + resultForAccessoreisPage + " , for Accessories page when we've opted out");
 		}
 
 		if (driver != null) {
 			driver.quit();
 		}
 
+	}
+
+	private static boolean saleOfInfo(String consoleResult) {
+		if (consoleResult.contains("SaleOfInfo=true") || consoleResult.contains("SaleOfInfo=auto")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
