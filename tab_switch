@@ -1,0 +1,74 @@
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.util.Set;
+
+public class SwitchBetweenTabs {
+    public static void main(String[] args) {
+        // Set the path to the ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+
+        // Initialize the ChromeDriver
+        WebDriver driver = new ChromeDriver();
+
+        // Open the first tab and navigate to the first URL
+        driver.get("https://www.example.com");
+
+        // Execute JavaScript to open a new tab
+        ((JavascriptExecutor) driver).executeScript("window.open('', '_blank');");
+
+        // Switch to the new tab
+        switchToNewTab(driver);
+
+        // Navigate to the second URL in the new tab
+        driver.get("https://www.example2.com");
+
+        // Perform validations or actions in the new tab
+        // For example, check the title of the new tab
+        String newTabTitle = driver.getTitle();
+        System.out.println("Title of the new tab: " + newTabTitle);
+
+        // Switch back to the original tab
+        switchToOriginalTab(driver);
+
+        // Perform changes in the original tab (e.g., click a button)
+        // ...
+
+        // Switch back to the new tab
+        switchToNewTab(driver);
+
+        // Perform validations or actions in the new tab based on changes in the original tab
+        // ...
+
+        // Repeat the process as needed
+
+        // Close the driver
+        driver.quit();
+    }
+
+    private static void switchToNewTab(WebDriver driver) {
+        // Get the handles of all open tabs
+        Set<String> handles = driver.getWindowHandles();
+
+        // Switch to the new tab
+        for (String handle : handles) {
+            driver.switchTo().window(handle);
+        }
+    }
+
+    private static void switchToOriginalTab(WebDriver driver) {
+        // Get the handles of all open tabs
+        Set<String> handles = driver.getWindowHandles();
+
+        // Iterate over the handles to find the original tab
+        for (String handle : handles) {
+            driver.switchTo().window(handle);
+
+            // Perform a check to identify the original tab (e.g., based on title or URL)
+            if (driver.getTitle().equals("Original Tab Title")) {
+                break;
+            }
+        }
+    }
+}
