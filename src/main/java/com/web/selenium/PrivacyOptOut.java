@@ -3,7 +3,9 @@ package com.web.selenium;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -51,6 +53,10 @@ public class PrivacyOptOut {
 	// Gaming accessories
 	private static String gamingAccessories = "gnav20-Shop-L3-52";
 
+	private static String popupXPath = "//div[@class='fgifts-m8s17p']";
+
+	private static String chatPopUp = "//*[@id=\"lpChat\"]/div[2]/div[1]/div/div[4]/div[3]";
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("webdriver.chrome.driver",
 				System.getProperty("user.dir") + "\\src\\main\\resources\\chromedriver.exe");
@@ -64,6 +70,7 @@ public class PrivacyOptOut {
 		driver.manage().deleteAllCookies();
 		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
 		driver.get(url);
 		WebElement optOut = driver.findElement(By.id(optOutId));
@@ -86,15 +93,144 @@ public class PrivacyOptOut {
 		driver.findElement(By.id(smartPhoneId)).click();
 
 		// Scrolling and selecting first phone option available
-		driver.findElement(By.cssSelector("#MTQP3LL\\/A-null > #productDetails img")).click();
+		try {
+			driver.findElement(By.cssSelector("#MTQP3LL\\/A-null > #productDetails img")).click();
+		} catch (ElementClickInterceptedException e) {
+			// TODO Auto-generated catch block
+			driver.findElement(By.cssSelector("#MTQP3LL\\/A-null > #productDetails img")).click();
+		}
 		// Selecting phone color
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".swatch:nth-child(2) > .h-9")));
 		driver.findElement(By.cssSelector(".swatch:nth-child(2) > .h-9")).click();
 
-		// *[@id="128"]/div/label
-		// Scrolling down to selet storage
-		// Thread.sleep(3000);
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+		// Selecting storage
+		// jsExecutor.executeScript("window.scrollTo(0,563)");
+		// checking if the chat is open
+
+		String xpath = "//*[@title='End conversation' and @class='lp_close lpc_maximized-header__close-button lpc_desktop']";
+		// Find the elements matching the XPath
+		WebElement element;
+		try {
+			element = driver.findElement(By.xpath(xpath));
+			if (element != null) {
+				element.click();
+			} else {
+
+			}
+
+		} catch (NoSuchElementException e) {
+			// *[@id="128"]/div/label
+			((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(
+					By.xpath("//input[@aria-label='128 GB' and @class='StyledInput-VDS__sc-n9jxr1-1 exZZih']")));
+			WebElement storage = driver.findElement(By.xpath("//*[@id=\"128\"]/div/label"));
+			// ((JavascriptExecutor)
+			// driver).executeScript("arguments[0].scrollIntoView(true);", storage);
+			storage.click();
+
+			handleSidePopUp();
+
+			String newCustomer = "(//*[contains(text(),'New customer')])[2]";
+
+//					WebElement newCustomerRadioButton = driver
+//							.findElement(By.xpath("//input[@aria-label='New customer' and @name='newOrExisting']"));
+			WebElement newCustomerRadioButton = driver.findElement(By.xpath(newCustomer));
+
+			try {
+				newCustomerRadioButton.click();
+			} catch (ElementClickInterceptedException e1) {
+				try {
+					driver.switchTo().defaultContent();
+					// action.moveToElement(newCustomerRadioButton).build().perform();
+					// action.click(newCustomerRadioButton).build().perform();
+					// wait.until(ExpectedConditions.elementToBeClickable(newCustomerRadioButton));
+					newCustomerRadioButton.click();
+				} catch (ElementClickInterceptedException e2) {
+					newCustomerRadioButton.click();
+				}
+			}
+		}
+
+		// Clicking payment type
+		String paymentOptionXpath = "(//*[@class='LabelBase-VDS__sc-6gb90f-1 StackedLabel-VDS__sc-6gb90f-3 bSIEdH cRXKyB'])[position()=1]";
+		WebElement paymentOption = driver.findElement(By.xpath(paymentOptionXpath));
+		paymentOption.click();
+
+		// clicking continue
+		String nextStepXpath = "//*[@data-testid='continueButtonId']";
+		WebElement nextStep = driver.findElement(By.xpath(nextStepXpath));
+		wait.until(ExpectedConditions.elementToBeClickable(nextStep)).click();
+
+		// XPath for the dialog box and confirming location
+		String dialogBoxXPath = "//div[@class='ModalDialog-VDS__sc-1m9nirl-0 eAsWjG']";
+
+		WebElement dialogBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(dialogBoxXPath)));
+		// Clear the zip code field and add value '30004'
+		WebElement zipCodeField = driver.findElement(By.xpath("//input[@data-testid='zipInput']"));
+		zipCodeField.clear();
+		zipCodeField.sendKeys("30004");
+
+		// Click the 'Confirm Location' button
+		WebElement confirmLocationButton = driver.findElement(By.xpath("//button[@data-testid='zipConfirm']"));
+		confirmLocationButton.click();
+
+		handleSidePopUp();
+
+		// Clicking on continue button
+		String goToCartId = "goToCartCTA";
+		driver.findElement(By.id(goToCartId)).click();
+
+		// Selecting plan
+		// *[@id="select_for_tile1"]/span[1]
+		String selectPlanXpath = "//*[@id=\"select_for_tile1\"]/span[1]";
+//				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
+//						driver.findElement(By.xpath(selectPlanXpath)));
+//				wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(selectPlanXpath)));
+		// wait.until(ExpectedConditions.elementToBeClickable(By.xpath(selectPlanCss)));
+
+		handleChatPopUp();
+		handleSidePopUp();
+		// *[@id="lpChat"]/div[2]/div[1]/div/div[4]/div[3]
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
+				driver.findElement(By.xpath(selectPlanXpath)));
+		handleSidePopUp();
+		driver.switchTo().defaultContent();
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
+				driver.findElement(By.xpath(selectPlanXpath)));
+		// wait.until(ExpectedConditions.elementToBeClickable(By.xpath(selectPlanXpath))).click();
+
+		try {
+			driver.findElement(By.xpath(
+					"/html/body/div[8]/div[1]/div[2]/div/div[2]/div/section/div[2]/div[2]/div[1]/div[1]/div/div[2]/div/div[3]/div[2]/div[2]/div[2]/div/div/div[1]/button/span[1]"))
+					.click();
+			String noDeviceProtectionId = "protection_decline_btn_lbl";
+			((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
+					driver.findElement(By.id(noDeviceProtectionId)));
+
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(noDeviceProtectionId)));
+
+			driver.findElement(By.id(noDeviceProtectionId)).click();
+
+			Thread.sleep(3000);
+
+			jsExecutor = (JavascriptExecutor) driver;
+		} catch (Exception e) {
+			// Execute the airgap.getConsent() command and store the result
+			Object result = jsExecutor.executeScript("return airgap.getConsent();");
+			System.out.println("Consent Result: " + result);
+
+			// Converting output received by executing airgap.getConsent(); in console to
+			// string
+
+			String consoleResult = result.toString();
+			System.out.println("Consent Result: " + result);
+			boolean SaleOfInfo = saleOfInfo(consoleResult);
+
+			if (SaleOfInfo == true) {
+				throw new Exception("SaleOfInfo is true even when we have opted out");
+			} else {
+				System.out.println("SaleofInfo=" + SaleOfInfo + " , for Devices page when we've opted out");
+			}
+		}
 
 		// Execute the airgap.getConsent() command and store the result
 		Object result = jsExecutor.executeScript("return airgap.getConsent();");
@@ -115,11 +251,13 @@ public class PrivacyOptOut {
 		if (SaleOfInfo == true) {
 			throw new Exception("SaleOfInfo is true even when we have opted out");
 		} else {
-			System.out.println("SaleofInfo=" + SaleOfInfo+" , for Devices page when we've opted out");
+			System.out.println("SaleofInfo=" + SaleOfInfo + " , for Devices page when we've opted out");
 		}
 
 		// ------------------------ Checking flow for Accessories page
-		((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
+		// ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,
+		// -document.body.scrollHeight)");
+		driver.get(url);
 		WebElement shopButton = driver.findElement(By.id(shopButtonId));
 
 		// Scrolling back to shop page
@@ -159,19 +297,74 @@ public class PrivacyOptOut {
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".glVjuF > .HitArea-VDS__sc-bc3yhn-0")));
 		driver.findElement(By.cssSelector(".glVjuF > .HitArea-VDS__sc-bc3yhn-0")).click();
 
-		result = jsExecutor.executeScript("return airgap.getConsent();");
-		boolean resultForAccessoreisPage = saleOfInfo(result.toString());
+		try {
+			driver.findElement(By.id("continueButtonId")).click();
+			String dialogClassName = "ModalDialog-VDS__sc-1m9nirl-0";
+			WebElement popup = wait.until(ExpectedConditions.presenceOfElementLocated(By.className(dialogClassName)));
+			// Find the "New Customer" button and click it
+			WebElement newCustomerButton = popup.findElement(By.xpath("//button[@data-testid='newCustomerCta']"));
+			newCustomerButton.click();
+			result = jsExecutor.executeScript("return airgap.getConsent();");
+			boolean resultForAccessoreisPage = saleOfInfo(result.toString());
 
-		if (resultForAccessoreisPage == true) {
-			throw new Exception("SaleOfInfo is false even when we have opted in");
-		} else {
-			System.out.println("SaleofInfo=" + resultForAccessoreisPage + " , for Accessories page when we've opted out");
+			if (resultForAccessoreisPage == true) {
+				throw new Exception("SaleOfInfo is false even when we have opted in");
+			} else {
+				System.out.println(
+						"SaleofInfo=" + resultForAccessoreisPage + " , for Accessories page when we've opted out");
+			}
+
+			if (driver != null) {
+				driver.quit();
+			}
+		} catch (Exception e) {
+			result = jsExecutor.executeScript("return airgap.getConsent();");
+			boolean resultForAccessoreisPage = saleOfInfo(result.toString());
+			if (resultForAccessoreisPage == true) {
+				throw new Exception("SaleOfInfo is false even when we have opted in");
+			} else {
+				System.out.println(
+						"SaleofInfo=" + resultForAccessoreisPage + " , for Accessories page when we've opted out");
+			}
+
+			if (driver != null) {
+				driver.quit();
+			}
+
 		}
 
-		if (driver != null) {
-			driver.quit();
-		}
+//		String dialogClassName = "ModalDialog-VDS__sc-1m9nirl-0";
+//		WebElement popup = wait.until(ExpectedConditions.presenceOfElementLocated(By.className(dialogClassName)));
+//		// Find the "New Customer" button and click it
+//		WebElement newCustomerButton = popup.findElement(By.xpath("//button[@data-testid='newCustomerCta']"));
+//		newCustomerButton.click();
 
+	}
+
+	private static void handleSidePopUp() {
+		// Check if the pop-up is present
+		if (isElementPresent(driver, By.xpath(popupXPath))) {
+			// Click the "Not now" button
+			WebElement notNowButton = driver
+					.findElement(By.xpath("//button[@data-testid='_15gifts-engagement-bubble-button-secondary']"));
+			notNowButton.click();
+		}
+	}
+
+	private static void handleChatPopUp() {
+		if (isElementPresent(driver, By.xpath(chatPopUp))) {
+			driver.findElement(By.xpath(chatPopUp)).click();
+		}
+	}
+
+	// Function to check if an element is present
+	private static boolean isElementPresent(WebDriver driver, By by) {
+		try {
+			driver.findElement(by);
+			return true;
+		} catch (org.openqa.selenium.NoSuchElementException e) {
+			return false;
+		}
 	}
 
 	private static boolean saleOfInfo(String consoleResult) {
